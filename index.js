@@ -24,5 +24,6 @@ app.use(
       useUnifiedTopology: true,
       useNewUrlParser: true
     })
-    .then(console.log("Connected To Mongo Db DataBase"));
+    .then(console.log("Connected To Mongo Db DataBase"))
+    .catch(e => console.log(e));
 })();
