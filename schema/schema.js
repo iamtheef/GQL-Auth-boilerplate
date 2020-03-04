@@ -37,14 +37,16 @@ const mutation = new GraphQLObjectType({
       },
       async resolve(parent, args) {
         const existingUser = await User.find({ email: args.email });
-        if (!existingUser) {
-          const user = new User({
-            username: args.username,
-            password: bcrypt.hashSync(args.password, 12),
-            email: args.email
-          });
-          return user.save();
+        if (existingUser) {
+          throw Error({ email: "User already exists" });
         }
+
+        const user = new User({
+          username: args.username,
+          password: bcrypt.hashSync(args.password, 12),
+          email: args.email
+        });
+        return user.save();
       }
     },
     login: {
