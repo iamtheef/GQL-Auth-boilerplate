@@ -38,4 +38,12 @@ const ClientType = new GraphQLObjectType({
   })
 });
 
-module.exports = { UserType, ClientType };
+const AuthType = new GraphQLObjectType({
+  name: "Auth",
+  fields: () => ({
+    user: { type: UserType },
+    error: { type: GraphQLString }
+  })
+});
+
+module.exports = { UserType, ClientType, AuthType };
