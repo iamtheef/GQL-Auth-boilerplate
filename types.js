@@ -2,14 +2,7 @@ const mongoose = require("mongoose");
 const graphql = require("graphql");
 const { User } = require("./models/User");
 const { Client } = require("./models/Client");
-const {
-  GraphQLObjectType,
-  GraphQLID,
-  GraphQLInt,
-  GraphQLNonNull,
-  GraphQLList,
-  GraphQLString
-} = graphql;
+const { GraphQLObjectType, GraphQLID, GraphQLList, GraphQLString } = graphql;
 
 const UserType = new GraphQLObjectType({
   name: "User",
@@ -20,8 +13,8 @@ const UserType = new GraphQLObjectType({
     password: { type: GraphQLString },
     clients: {
       type: new GraphQLList(ClientType),
-      resolve(parent, args) {
-        return Client.find({ name: parent.name });
+      resolve(_, args) {
+        return Client.find({ name: _.name });
       }
     }
   })
