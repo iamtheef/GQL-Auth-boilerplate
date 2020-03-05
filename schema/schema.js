@@ -3,6 +3,8 @@ const { UserType, ClientType, AuthType } = require("../types");
 const User = require("../models/User");
 const Client = require("../models/Client");
 const bcrypt = require("bcryptjs");
+const passport = require("passport");
+
 const {
   GraphQLObjectType,
   GraphQLString,
@@ -65,12 +67,18 @@ const mutation = new GraphQLObjectType({
       type: AuthType,
       args: {
         email: { type: new GraphQLNonNull(GraphQLString) },
-        password: { type: new GraphQLNonNull(GraphQLString) }
+        password: { type: new GraphQLNonNull(GraphQLString) },
+        isGoogle: { type: new GraphQLNonNull(GraphQLBoolean) }
       },
       async resolve(_, args) {
+        if (isGoogle) {
+          // to be setup
+          passport.use(new GoogleStrategy({}));
+        }
+
         const user = await User.findOne({ email: args.email });
-        const match = await bcrypt.compare(args.password, user.password);
-        if (user && match) {
+        const passMatches = await bcrypt.compare(args.password, user.password);
+        if (user && passMatches) {
           return { user, error: null };
         }
         return { user: null, error: "Incorrect email/password" };

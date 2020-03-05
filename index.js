@@ -1,25 +1,27 @@
-const express = require("express");
-const app = express();
-const graphHTTP = require("express-graphql");
+const { ApolloServer } = require("apollo-server");
 const schema = require("./schema/schema");
 const credits = require("./credits");
 const mongoose = require("mongoose");
 
-app.get("/", (req, res) => res.send("Hello all possible worlds!"));
-app.use(
-  "/graphql",
-  graphHTTP({
-    schema,
-    graphiql: true
-  })
-);
-
 (async () => {
-  const port = process.env.PORT || 3000;
-  await app.listen(port, () => console.log(`Listening on ${port}`));
-  const db = `mongodb+srv://${credits.username}:${credits.password}@gql-testdb-n027j.mongodb.net/test?retryWrites=true&w=majority`;
+  const DB = `mongodb+srv://${credits.username}:${credits.password}@gql-testdb-n027j.mongodb.net/test?retryWrites=true&w=majority`;
+  const PORT = process.env.PORT || 4001;
+
+  // await app.listen(port, () => console.log(`Listening on ${port}`));
+  const server = new ApolloServer({
+    schema,
+    introspection: true,
+    playground: {
+      settings: {
+        "editor.theme": "grey"
+      }
+    }
+  });
+  await server.listen(PORT).then(() => {
+    console.log(`🚀 Listening on ${PORT}`);
+  });
   await mongoose
-    .connect(db, {
+    .connect(DB, {
       useCreateIndex: true,
       useUnifiedTopology: true,
       useNewUrlParser: true
