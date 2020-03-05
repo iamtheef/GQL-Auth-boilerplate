@@ -1,13 +1,20 @@
+const express = require("express");
+const app = express();
 const { ApolloServer } = require("apollo-server");
+const { DB_credits } = require("./config/credits");
 const schema = require("./schema/schema");
-const credits = require("./credits");
+const passport = require("passport");
 const mongoose = require("mongoose");
+const passportAuth = require("./config/passport-auth");
+
+const DB = `mongodb+srv://${DB_credits.username}:${DB_credits.password}@gql-testdb-n027j.mongodb.net/test?retryWrites=true&w=majority`;
+const PORT = process.env.PORT || 4001;
 
 (async () => {
-  const DB = `mongodb+srv://${credits.username}:${credits.password}@gql-testdb-n027j.mongodb.net/test?retryWrites=true&w=majority`;
-  const PORT = process.env.PORT || 4001;
+  // express router for server and authentication routes
+  await app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
-  // await app.listen(port, () => console.log(`Listening on ${port}`));
+  //runs Apollo server for API
   const server = new ApolloServer({
     schema,
     introspection: true,
@@ -17,9 +24,10 @@ const mongoose = require("mongoose");
       }
     }
   });
-  await server.listen(PORT).then(() => {
-    console.log(`🚀 Listening on ${PORT}`);
+  await server.listen(4000).then(() => {
+    console.log(`🚀 Listening on 4000`);
   });
+
   await mongoose
     .connect(DB, {
       useCreateIndex: true,
@@ -29,3 +37,15 @@ const mongoose = require("mongoose");
     .then(console.log("Connected To Mongo Db DataBase"))
     .catch(e => console.log(e));
 })();
+
+app.get("/", (req, res) => {
+  res.send("Hello all possible worlds"); // insert React app here
+});
+
+// route for google OAuth
+app.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: ["profile"]
+  })
+);

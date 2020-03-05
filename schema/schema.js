@@ -1,9 +1,10 @@
 const graphql = require("graphql");
+const bcrypt = require("bcryptjs");
+const passport = require("passport");
 const { UserType, ClientType, AuthType } = require("../types");
 const User = require("../models/User");
 const Client = require("../models/Client");
-const bcrypt = require("bcryptjs");
-const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20");
 
 const {
   GraphQLObjectType,
@@ -73,7 +74,6 @@ const mutation = new GraphQLObjectType({
       async resolve(_, args) {
         if (isGoogle) {
           // to be setup
-          passport.use(new GoogleStrategy({}));
         }
 
         const user = await User.findOne({ email: args.email });
