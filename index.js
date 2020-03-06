@@ -49,3 +49,11 @@ app.get(
     scope: ["profile"]
   })
 );
+
+// redirecting from google
+app.get(
+  "/auth/google/redirection",
+  passport.authenticate("google", (req, res) => {
+    res.send("google redirection logic goes here!");
+  })
+);

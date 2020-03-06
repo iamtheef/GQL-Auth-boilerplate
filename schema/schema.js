@@ -25,13 +25,8 @@ const rootQuery = new GraphQLObjectType({
       resolve(_, args) {
         return "Hello Bitch!";
       }
-    }
-  }
-});
+    },
 
-const mutation = new GraphQLObjectType({
-  name: "Mutation",
-  fields: {
     // isUserRegistered
     isUserRegistered: {
       type: GraphQLBoolean,
@@ -42,8 +37,13 @@ const mutation = new GraphQLObjectType({
         if (await User.findOne({ email: args.email })) return true;
         return false;
       }
-    },
+    }
+  }
+});
 
+const mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
     // register mutation
     register: {
       type: AuthType,
@@ -68,20 +68,30 @@ const mutation = new GraphQLObjectType({
       type: AuthType,
       args: {
         email: { type: new GraphQLNonNull(GraphQLString) },
-        password: { type: new GraphQLNonNull(GraphQLString) },
-        isGoogle: { type: new GraphQLNonNull(GraphQLBoolean) }
+        password: { type: new GraphQLNonNull(GraphQLString) }
       },
       async resolve(_, args) {
-        if (isGoogle) {
-          // to be setup
-        }
-
         const user = await User.findOne({ email: args.email });
         const passMatches = await bcrypt.compare(args.password, user.password);
         if (user && passMatches) {
           return { user, error: null };
         }
         return { user: null, error: "Incorrect email/password" };
+      }
+    },
+
+    googleLogin: {
+      type: AuthType,
+      args: {
+        profile: { type: GraphQLString } //send the profile object as input(which breaks or separate the props)
+      },
+      async resolve(_, args) {
+        const newUser = user.save();
+        return { user: newUser, error: null };
+
+        // const user = await User.findOne({ googleID: args.googleID });
+        // if (user) return { user, error: null };
+        // return { user: null, error: "Incorrect email/password" };
       }
     }
   }
