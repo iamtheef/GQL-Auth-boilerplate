@@ -4,10 +4,8 @@ const userSchema = new mongoose.Schema({
   username: String,
   password: String,
   email: String,
-  google: {
-    isGoogle: Boolean,
-    googleID: String
-  },
+  isGoogle: Boolean,
+  googleID: String,
   role: String,
   date: {
     type: Date,

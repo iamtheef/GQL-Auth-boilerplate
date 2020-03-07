@@ -7,7 +7,12 @@ const passport = require("passport");
 const mongoose = require("mongoose");
 const passportAuth = require("./config/passport-auth");
 
+// Atlas DB
 const DB = `mongodb+srv://${DB_credits.username}:${DB_credits.password}@gql-testdb-n027j.mongodb.net/test?retryWrites=true&w=majority`;
+
+// Local DB
+// const DB = `mongodb://localhost:27017/gql`;
+
 const PORT = process.env.PORT || 4001;
 
 (async () => {
@@ -20,7 +25,7 @@ const PORT = process.env.PORT || 4001;
     introspection: true,
     playground: {
       settings: {
-        "editor.theme": "grey"
+        "editor.theme": "dark"
       }
     }
   });
@@ -38,6 +43,10 @@ const PORT = process.env.PORT || 4001;
     .catch(e => console.log(e));
 })();
 
+// ================================
+// ROUTES =======================\\\
+// ================================
+
 app.get("/", (req, res) => {
   res.send("Hello all possible worlds"); // insert React app here
 });
@@ -53,7 +62,8 @@ app.get(
 // redirecting from google
 app.get(
   "/auth/google/redirection",
-  passport.authenticate("google", (req, res) => {
-    res.send("google redirection logic goes here!");
-  })
+  passport.authenticate("google"),
+  (req, res) => {
+    res.send("google redirection route!");
+  }
 );

@@ -2,7 +2,13 @@ const mongoose = require("mongoose");
 const graphql = require("graphql");
 const { User } = require("./models/User");
 const { Client } = require("./models/Client");
-const { GraphQLObjectType, GraphQLID, GraphQLList, GraphQLString } = graphql;
+const {
+  GraphQLObjectType,
+  GraphQLID,
+  GraphQLList,
+  GraphQLString,
+  GraphQLInputObjectType
+} = graphql;
 
 const UserType = new GraphQLObjectType({
   name: "User",

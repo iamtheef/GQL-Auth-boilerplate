@@ -14,7 +14,8 @@ const {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLInputObjectType
 } = graphql;
 
 const rootQuery = new GraphQLObjectType({
@@ -83,15 +84,19 @@ const mutation = new GraphQLObjectType({
     googleLogin: {
       type: AuthType,
       args: {
-        profile: { type: GraphQLString } //send the profile object as input(which breaks or separate the props)
+        id: { type: GraphQLString },
+        username: { type: GraphQLString },
+        avatar: { type: GraphQLString }
       },
       async resolve(_, args) {
-        const newUser = user.save();
+        const user = await User.findOne({ googleID: args.id });
+        if (user) return { user, error: null };
+        const newUser = await new User({
+          isGoogle: true,
+          googleID: args.id,
+          avatar: args.avatar
+        }).save();
         return { user: newUser, error: null };
-
-        // const user = await User.findOne({ googleID: args.googleID });
-        // if (user) return { user, error: null };
-        // return { user: null, error: "Incorrect email/password" };
       }
     }
   }
