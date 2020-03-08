@@ -7,6 +7,8 @@ const passport = require("passport");
 const mongoose = require("mongoose");
 const passportAuth = require("./config/passport-auth");
 
+app.use(passport.initialize());
+
 // Atlas DB
 const DB = `mongodb+srv://${DB_credits.username}:${DB_credits.password}@gql-testdb-n027j.mongodb.net/test?retryWrites=true&w=majority`;
 
@@ -64,6 +66,6 @@ app.get(
   "/auth/google/redirection",
   passport.authenticate("google"),
   (req, res) => {
-    res.send("google redirection route!");
+    res.redirect("http://localhost:4000");
   }
 );

@@ -49,18 +49,22 @@ const mutation = new GraphQLObjectType({
     register: {
       type: AuthType,
       args: {
-        username: { type: new GraphQLNonNull(GraphQLString) },
-        password: { type: new GraphQLNonNull(GraphQLString) },
-        email: { type: new GraphQLNonNull(GraphQLString) }
+        fullname: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) }
       },
       async resolve(_, args) {
-        const user = new User({
+        await new User({
           username: args.username,
           password: bcrypt.hashSync(args.password, 12),
           email: args.email
-        });
-        const newUser = user.save();
-        return { user: newUser, error: null };
+        })
+          .save(user => {
+            return { user, error: null };
+          })
+          .catch(e => {
+            return { user: null, error: e };
+          });
       }
     },
 
@@ -84,14 +88,15 @@ const mutation = new GraphQLObjectType({
     googleLogin: {
       type: AuthType,
       args: {
-        id: { type: GraphQLString },
-        username: { type: GraphQLString },
-        avatar: { type: GraphQLString }
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        username: { type: new GraphQLNonNull(GraphQLString) },
+        avatar: { type: new GraphQLNonNull(GraphQLString) }
       },
       async resolve(_, args) {
         const user = await User.findOne({ googleID: args.id });
         if (user) return { user, error: null };
         const newUser = await new User({
+          username: args.username,
           isGoogle: true,
           googleID: args.id,
           avatar: args.avatar
