@@ -55,15 +55,18 @@ const mutation = new GraphQLObjectType({
       },
       async resolve(_, args) {
         await new User({
-          username: args.username,
-          password: bcrypt.hashSync(args.password, 12),
-          email: args.email
+          fullname: args.fullname,
+          email: args.email,
+          password: bcrypt.hashSync(args.password, 12)
         })
           .save(user => {
             return { user, error: null };
           })
           .catch(e => {
-            return { user: null, error: e };
+            return {
+              user: null,
+              error: "Ooops, something is wrong. Try again."
+            };
           });
       }
     },
@@ -76,10 +79,10 @@ const mutation = new GraphQLObjectType({
         password: { type: new GraphQLNonNull(GraphQLString) }
       },
       async resolve(_, args) {
-        const user = await User.findOne({ email: args.email });
+        const userFound = await User.findOne({ email: args.email });
         const passMatches = await bcrypt.compare(args.password, user.password);
-        if (user && passMatches) {
-          return { user, error: null };
+        if (userFound && passMatches) {
+          return { user: userFound, error: null };
         }
         return { user: null, error: "Incorrect email/password" };
       }
